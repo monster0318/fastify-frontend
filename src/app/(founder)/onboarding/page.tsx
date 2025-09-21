@@ -1,6 +1,6 @@
 "use client";
 import { Box, Step, StepLabel, Stepper, Typography } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from 'next/navigation';
 import CompanyBasicsForm from "@/components/views/onboardingForms/CompanyBasicsForm";
 import KYCForm from "@/components/views/onboardingForms/KYCForm";

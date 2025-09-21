@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Box, Typography, Chip, Tabs, Tab } from "@mui/material";
 import StringAvatar from "@/components/ui/StringAvatar";
 import TabPanel from "@/components/ui/TabPanel";

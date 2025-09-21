@@ -26,8 +26,8 @@ export default function SignInPage() {
       if (resp.status === 200) {
         login(resp.data?.data?.token);
       }
-    } catch (err: any) {
-      console.error(err);
+    } catch (err: unknown) {
+      console.error('Login error:', err);
     }
   };
 

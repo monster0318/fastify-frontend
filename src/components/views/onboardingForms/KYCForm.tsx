@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { Button, Typography } from "@mui/material";
-import { useAuth, type Company, type User } from "@/contexts/AuthContext";
+import { useAuth, type Company } from "@/contexts/AuthContext";
 import api from "@/lib/axios";
 
 export default function KYCForm(

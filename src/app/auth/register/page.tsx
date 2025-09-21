@@ -27,8 +27,8 @@ export default function SignUpPage() {
       if (resp.status === 200) {
         login(resp.data?.data?.token);
       }
-    } catch (err: any) {
-      console.error(err);
+    } catch (err: unknown) {
+      console.error('Registration error:', err);
     }
   };
 

@@ -11,10 +11,7 @@ api.interceptors.request.use((config) => {
   try {
     const token = window.sessionStorage.getItem('token');
     if (token) {
-      config.headers = {
-        ...(config.headers as Record<string, string> | undefined),
-        Authorization: `Bearer ${token}`,
-      } as any;
+      config.headers.set('Authorization', `Bearer ${token}`);
     }
   } catch (e) {
     console.error('Error setting auth token in request:', e);

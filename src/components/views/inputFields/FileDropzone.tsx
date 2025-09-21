@@ -29,10 +29,10 @@ export default function FileDropzone() {
     fetchFiles();
   }, []);
 
-  const onDrop = useCallback(async (acceptedFiles: any) => {
+  const onDrop = useCallback(async (acceptedFiles: File[]) => {
     if (!acceptedFiles) return;
     const formData = new FormData();
-    acceptedFiles.forEach(async (file: any) => {
+    acceptedFiles.forEach(async (file: File) => {
       formData.append('files', file);
     });
     const res = await api.post('/files', formData, {
@@ -63,7 +63,7 @@ export default function FileDropzone() {
       }
 
       const hasExt = /\.[a-zA-Z0-9]+$/.test(filename);
-      if (!hasExt && (doc as any).mimeType) {
+      if (!hasExt && (doc as Document & { mimeType?: string }).mimeType) {
         const mimeToExt: Record<string, string> = {
           'application/pdf': '.pdf',
           'application/vnd.ms-powerpoint': '.ppt',
@@ -71,7 +71,7 @@ export default function FileDropzone() {
           'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': '.xlsx',
           'application/vnd.openxmlformats-officedocument.presentationml.presentation': '.pptx',
         };
-        const ext = mimeToExt[(doc as any).mimeType] || '';
+        const ext = mimeToExt[(doc as Document & { mimeType?: string }).mimeType || ''] || '';
         filename = filename + ext;
       }
 
@@ -84,7 +84,7 @@ export default function FileDropzone() {
       a.click();
       a.remove();
       window.URL.revokeObjectURL(url);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Download failed', err);
     }
   }
@@ -102,7 +102,7 @@ export default function FileDropzone() {
       } else {
         console.error('Delete failed', res);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Delete failed', err);
     } finally {
       setDeletingIds(prev => {

@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { Box, Link, Button, Typography, CircularProgress } from "@mui/material";
-import type { Company, User } from "@/contexts/AuthContext";
+import type { Company } from "@/contexts/AuthContext";
 import { useAuth } from "@/contexts/AuthContext";
 import api from "@/lib/axios";
 export default function FinancialForm(
@@ -9,7 +9,7 @@ export default function FinancialForm(
   {company: Company | null; onNext: () => void; onPrevious: () => void}
 ) {
   const [loading, setLoading] = useState(false);
-  const { user, fetchUser } = useAuth();
+  const { fetchUser } = useAuth();
 
   const handleLinkFinancial = async () => {
     setLoading(true);

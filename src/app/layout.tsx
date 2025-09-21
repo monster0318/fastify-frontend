@@ -1,4 +1,4 @@
-import { ThemeProvider, CssBaseline, createTheme } from '@mui/material';
+import { ThemeProvider, CssBaseline } from '@mui/material';
 import type { Metadata } from "next";
 import theme from '@/lib/theme';
 import { Geist, Geist_Mono } from "next/font/google";

@@ -5,11 +5,10 @@ import {
   NotificationFeed,
   NotificationIconButton,
   useNotifications,
-  useNotificationStore,
   useAuthenticatedKnockClient,
 } from "@knocklabs/react";
 import { useEffect, useState } from "react";
-import { Box, Badge, AppBar, Toolbar, Typography, Container, IconButton, Menu, MenuItem } from "@mui/material";
+import { Box, AppBar, Toolbar, Typography, Container, IconButton, Menu, MenuItem } from "@mui/material";
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import "@knocklabs/react/dist/index.css";
 import { useAuth } from "@/contexts/AuthContext";
@@ -37,7 +36,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     } else if (!(user.companies?.length && user.companies[0]?.kycVerified && user.companies[0]?.financialsLinked)) {
       router.push("/onboarding");
     }
-  }, [user, router]);
+  }, [user, router, fetchUser]);
 
   useEffect(() => {
     notificationFeed.fetch();

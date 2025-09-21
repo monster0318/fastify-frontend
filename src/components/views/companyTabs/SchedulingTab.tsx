@@ -1,6 +1,5 @@
 "use client";
-import { Box, Divider, Typography } from "@mui/material";
-import { useEffect, useState } from "react";
+import { Box, Typography } from "@mui/material";
 
 export default function SchedulingTab() {
   return (

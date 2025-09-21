@@ -1,5 +1,5 @@
 "use client";
-import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import { createContext, useContext, useEffect, useState, ReactNode, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import api from "@/lib/axios";
 
@@ -46,15 +46,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [token, setToken] = useState<string | null>(null);
   const router = useRouter();
 
-  useEffect(() => {
-    const storedToken = sessionStorage.getItem("token");
-    if (storedToken) {
-      setToken(storedToken);
-      fetchUser();
-    }
-  }, []);
+  const logout = useCallback(() => {
+    sessionStorage.removeItem("token");
+    setToken(null);
+    setUser(null);
+    router.push("/auth/login");
+  }, [router]);
 
-  const fetchUser = async () => {
+  const fetchUser = useCallback(async () => {
     try {
       const storedToken = sessionStorage.getItem("token");
       if (storedToken) {
@@ -67,20 +66,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       console.error("Failed to fetch user", err);
       logout();
     }
-  }
+  }, [logout]);
+
+  useEffect(() => {
+    const storedToken = sessionStorage.getItem("token");
+    if (storedToken) {
+      setToken(storedToken);
+      fetchUser();
+    }
+  }, [fetchUser]);
 
   const login = async (newToken: string) => {
     sessionStorage.setItem("token", newToken);
     setToken(newToken);
     await fetchUser();
     router.push("/dashboard");
-  };
-
-  const logout = () => {
-    sessionStorage.removeItem("token");
-    setToken(null);
-    setUser(null);
-    router.push("/auth/login");
   };
 
   return (
