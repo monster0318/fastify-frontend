@@ -7,6 +7,7 @@ import { Typography, Button, TextField, Container } from '@mui/material';
 import { zodResolver } from '@hookform/resolvers/zod';
 import api from '@/lib/axios';
 import { useAuth } from '@/contexts/AuthContext';
+import { toastService } from '@/lib/toast';
 
 const schema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -29,6 +30,7 @@ export default function SignUpPage() {
       }
     } catch (err: unknown) {
       console.error('Registration error:', err);
+      // Error handling is now done by axios interceptor
     }
   };
 

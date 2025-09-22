@@ -3,6 +3,8 @@ import type { Metadata } from "next";
 import theme from '@/lib/theme';
 import { Geist, Geist_Mono } from "next/font/google";
 import { AuthProvider } from '@/contexts/AuthContext';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import "./globals.css";
 
 const geistSans = Geist({
@@ -32,6 +34,18 @@ export default function RootLayout({
           <AuthProvider>
             <CssBaseline />
             {children}
+            <ToastContainer
+              position="top-right"
+              autoClose={5000}
+              hideProgressBar={false}
+              newestOnTop={false}
+              closeOnClick
+              rtl={false}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+              theme="light"
+            />
           </AuthProvider>
         </ThemeProvider>
       </body>

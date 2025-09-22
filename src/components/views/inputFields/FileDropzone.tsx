@@ -5,6 +5,7 @@ import api from '@/lib/axios';
 import type { Document } from '@/contexts/AuthContext';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
+import { toastService } from '@/lib/toast';
 
 const allowedTypes = {
   'application/pdf': [".pdf"],
@@ -19,9 +20,14 @@ export default function FileDropzone() {
   const [deletingIds, setDeletingIds] = useState<Record<string, boolean>>({});
 
   const fetchFiles = async () => {
-    const res = await api.get('/files');
-    if (res.status === 200) {
-      setFiles(res.data.data);
+    try {
+      const res = await api.get('/files');
+      if (res.status === 200) {
+        setFiles(res.data.data);
+      }
+    } catch (error) {
+      console.error('Error fetching files:', error);
+      // Error handling is now done by axios interceptor
     }
   }
 
@@ -35,11 +41,17 @@ export default function FileDropzone() {
     acceptedFiles.forEach(async (file: File) => {
       formData.append('files', file);
     });
-    const res = await api.post('/files', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' }
-    });
-    if (res.status === 200) {
-      fetchFiles();
+    
+    try {
+      const res = await api.post('/files', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      if (res.status === 200) {
+        fetchFiles();
+      }
+    } catch (error) {
+      console.error('File upload error:', error);
+      // Error handling is now done by axios interceptor
     }
   }, []);
 
@@ -104,6 +116,7 @@ export default function FileDropzone() {
       }
     } catch (err: unknown) {
       console.error('Delete failed', err);
+      // Error handling is now done by axios interceptor
     } finally {
       setDeletingIds(prev => {
         const next = { ...prev };

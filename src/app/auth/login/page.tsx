@@ -7,6 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Typography, Button, TextField, Container } from '@mui/material';
 import api from '@/lib/axios';
 import { useAuth } from '@/contexts/AuthContext';
+import { toastService } from '@/lib/toast';
 
 const schema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
@@ -28,6 +29,7 @@ export default function SignInPage() {
       }
     } catch (err: unknown) {
       console.error(err);
+      // Error handling is now done by axios interceptor
     }
   };
 

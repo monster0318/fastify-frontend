@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Button, Typography } from "@mui/material";
 import { useAuth, type Company } from "@/contexts/AuthContext";
 import api from "@/lib/axios";
+import { toastService } from "@/lib/toast";
 
 export default function KYCForm(
   {company, onNext, onPrevious}:
@@ -13,11 +14,17 @@ export default function KYCForm(
 
   const handleKycVerify = async () => {
     setLoading(true);
-    const resp = await api.post('/kyc/verify');
-    if (resp.status === 200) {
-      fetchUser();
+    try {
+      const resp = await api.post('/kyc/verify');
+      if (resp.status === 200) {
+        fetchUser();
+      }
+    } catch (error) {
+      console.error('KYC verification error:', error);
+      // Error handling is now done by axios interceptor
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }
 
   return (
