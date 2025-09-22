@@ -45,7 +45,7 @@ call :check_env
 if errorlevel 1 exit /b 1
 
 echo %INFO% Building and starting containers...
-docker-compose up --build -d
+docker-compose -f docker-compose.dev.yml up --build -d
 if errorlevel 1 (
     echo %ERROR% Failed to start containers
     exit /b 1
@@ -66,7 +66,7 @@ call :check_env
 if errorlevel 1 exit /b 1
 
 echo %INFO% Building and starting production containers...
-docker-compose --profile production up --build -d
+docker-compose -f docker-compose.prod.yml up --build -d
 if errorlevel 1 (
     echo %ERROR% Failed to start production containers
     exit /b 1
@@ -81,20 +81,33 @@ goto :eof
 REM Function to stop containers
 :stop_containers
 echo %INFO% Stopping all containers...
-docker-compose down
+docker-compose -f docker-compose.dev.yml down 2>nul
+docker-compose -f docker-compose.prod.yml down 2>nul
 echo %SUCCESS% All containers stopped!
 goto :eof
 
 REM Function to show logs
 :show_logs
 echo %INFO% Showing container logs (Press Ctrl+C to exit)...
-docker-compose logs -f
+REM Try to show logs from whichever compose file is running
+docker-compose -f docker-compose.dev.yml ps -q >nul 2>&1
+if not errorlevel 1 (
+    docker-compose -f docker-compose.dev.yml logs -f
+) else (
+    docker-compose -f docker-compose.prod.yml ps -q >nul 2>&1
+    if not errorlevel 1 (
+        docker-compose -f docker-compose.prod.yml logs -f
+    ) else (
+        echo %WARNING% No containers are currently running
+    )
+)
 goto :eof
 
 REM Function to clean up
 :clean_up
 echo %INFO% Cleaning up Docker resources...
-docker-compose down -v --remove-orphans
+docker-compose -f docker-compose.dev.yml down -v --remove-orphans 2>nul
+docker-compose -f docker-compose.prod.yml down -v --remove-orphans 2>nul
 docker system prune -f
 echo %SUCCESS% Cleanup completed!
 goto :eof
@@ -102,7 +115,11 @@ goto :eof
 REM Function to show status
 :show_status
 echo %INFO% Container status:
-docker-compose ps
+echo Development containers:
+docker-compose -f docker-compose.dev.yml ps 2>nul || echo No dev containers running
+echo.
+echo Production containers:
+docker-compose -f docker-compose.prod.yml ps 2>nul || echo No prod containers running
 
 echo.
 echo %INFO% Health check:
