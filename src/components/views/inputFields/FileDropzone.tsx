@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { Box, Typography, Button, List, ListItem, ListItemText, IconButton, ListItemIcon } from '@mui/material';
+import { Box, Typography, List, ListItem, ListItemText, IconButton, ListItemIcon } from '@mui/material';
 import api from '@/lib/axios';
 import type { Document } from '@/contexts/AuthContext';
 import DeleteIcon from '@mui/icons-material/Delete';

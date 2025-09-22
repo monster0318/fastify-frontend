@@ -27,7 +27,7 @@ export default function SignInPage() {
         login(resp.data?.data?.token);
       }
     } catch (err: unknown) {
-      console.error('Login error:', err);
+      console.error(err);
     }
   };
 
