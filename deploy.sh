@@ -1,0 +1,168 @@
+#!/bin/bash
+
+# Capital Marketplace Frontend - Docker Deployment Script
+# Usage: ./deploy.sh [dev|prod|stop|logs|clean]
+
+set -e  # Exit on any error
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+# Function to print colored output
+print_status() {
+    echo -e "${BLUE}[INFO]${NC} $1"
+}
+
+print_success() {
+    echo -e "${GREEN}[SUCCESS]${NC} $1"
+}
+
+print_warning() {
+    echo -e "${YELLOW}[WARNING]${NC} $1"
+}
+
+print_error() {
+    echo -e "${RED}[ERROR]${NC} $1"
+}
+
+# Function to check if Docker is running
+check_docker() {
+    if ! docker info > /dev/null 2>&1; then
+        print_error "Docker is not running. Please start Docker and try again."
+        exit 1
+    fi
+}
+
+# Function to check if .env.local exists
+check_env() {
+    if [ ! -f ".env.local" ]; then
+        print_warning ".env.local not found. Creating from template..."
+        if [ -f "env.example" ]; then
+            cp env.example .env.local
+            print_warning "Please edit .env.local with your actual values before deploying."
+        else
+            print_error "env.example not found. Please create .env.local manually."
+            exit 1
+        fi
+    fi
+}
+
+# Function for development deployment
+deploy_dev() {
+    print_status "Starting development deployment..."
+    check_docker
+    check_env
+    
+    print_status "Building and starting containers..."
+    docker-compose up --build -d
+    
+    print_success "Development deployment completed!"
+    print_status "Application is running at: http://localhost:3000"
+    print_status "Health check: http://localhost:3000/api/health"
+    print_status "To view logs: ./deploy.sh logs"
+}
+
+# Function for production deployment
+deploy_prod() {
+    print_status "Starting production deployment with nginx..."
+    check_docker
+    check_env
+    
+    print_status "Building and starting production containers..."
+    docker-compose --profile production up --build -d
+    
+    print_success "Production deployment completed!"
+    print_status "Application is running at: http://localhost (port 80)"
+    print_status "Health check: http://localhost/api/health"
+    print_status "To view logs: ./deploy.sh logs"
+}
+
+# Function to stop containers
+stop_containers() {
+    print_status "Stopping all containers..."
+    docker-compose down
+    print_success "All containers stopped!"
+}
+
+# Function to show logs
+show_logs() {
+    print_status "Showing container logs (Press Ctrl+C to exit)..."
+    docker-compose logs -f
+}
+
+# Function to clean up
+clean_up() {
+    print_status "Cleaning up Docker resources..."
+    docker-compose down -v --remove-orphans
+    docker system prune -f
+    print_success "Cleanup completed!"
+}
+
+# Function to show status
+show_status() {
+    print_status "Container status:"
+    docker-compose ps
+    
+    print_status "\nHealth check:"
+    if curl -f http://localhost:3000/api/health > /dev/null 2>&1; then
+        print_success "Application is healthy!"
+    else
+        print_warning "Application health check failed or not running"
+    fi
+}
+
+# Function to show help
+show_help() {
+    echo "Capital Marketplace Frontend - Docker Deployment Script"
+    echo ""
+    echo "Usage: $0 [COMMAND]"
+    echo ""
+    echo "Commands:"
+    echo "  dev     Deploy for development (port 3000)"
+    echo "  prod    Deploy for production with nginx (port 80)"
+    echo "  stop    Stop all containers"
+    echo "  logs    Show container logs"
+    echo "  clean   Stop containers and clean up Docker resources"
+    echo "  status  Show container status and health"
+    echo "  help    Show this help message"
+    echo ""
+    echo "Examples:"
+    echo "  $0 dev      # Start development environment"
+    echo "  $0 prod     # Start production environment"
+    echo "  $0 logs     # View logs"
+    echo "  $0 stop     # Stop all containers"
+}
+
+# Main script logic
+case "${1:-dev}" in
+    "dev")
+        deploy_dev
+        ;;
+    "prod")
+        deploy_prod
+        ;;
+    "stop")
+        stop_containers
+        ;;
+    "logs")
+        show_logs
+        ;;
+    "clean")
+        clean_up
+        ;;
+    "status")
+        show_status
+        ;;
+    "help"|"-h"|"--help")
+        show_help
+        ;;
+    *)
+        print_error "Unknown command: $1"
+        show_help
+        exit 1
+        ;;
+esac
