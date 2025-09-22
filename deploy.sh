@@ -58,7 +58,7 @@ deploy_dev() {
     check_env
     
     print_status "Building and starting containers..."
-    docker-compose -f docker-compose.dev.yml up --build -d
+    docker compose -f docker-compose.dev.yml up --build -d
     
     print_success "Development deployment completed!"
     print_status "Application is running at: http://localhost:3000"
@@ -73,7 +73,7 @@ deploy_prod() {
     check_env
     
     print_status "Building and starting production containers..."
-    docker-compose -f docker-compose.prod.yml up --build -d
+    docker compose -f docker-compose.prod.yml up --build -d
     
     print_success "Production deployment completed!"
     print_status "Application is running at: http://localhost (port 80)"
@@ -84,8 +84,8 @@ deploy_prod() {
 # Function to stop containers
 stop_containers() {
     print_status "Stopping all containers..."
-    docker-compose -f docker-compose.dev.yml down 2>/dev/null || true
-    docker-compose -f docker-compose.prod.yml down 2>/dev/null || true
+    docker compose -f docker-compose.dev.yml down 2>/dev/null || true
+    docker compose -f docker-compose.prod.yml down 2>/dev/null || true
     print_success "All containers stopped!"
 }
 
@@ -93,10 +93,10 @@ stop_containers() {
 show_logs() {
     print_status "Showing container logs (Press Ctrl+C to exit)..."
     # Try to show logs from whichever compose file is running
-    if docker-compose -f docker-compose.dev.yml ps -q | grep -q .; then
-        docker-compose -f docker-compose.dev.yml logs -f
-    elif docker-compose -f docker-compose.prod.yml ps -q | grep -q .; then
-        docker-compose -f docker-compose.prod.yml logs -f
+    if docker compose -f docker-compose.dev.yml ps -q | grep -q .; then
+        docker compose -f docker-compose.dev.yml logs -f
+    elif docker compose -f docker-compose.prod.yml ps -q | grep -q .; then
+        docker compose -f docker-compose.prod.yml logs -f
     else
         print_warning "No containers are currently running"
     fi
@@ -105,8 +105,8 @@ show_logs() {
 # Function to clean up
 clean_up() {
     print_status "Cleaning up Docker resources..."
-    docker-compose -f docker-compose.dev.yml down -v --remove-orphans 2>/dev/null || true
-    docker-compose -f docker-compose.prod.yml down -v --remove-orphans 2>/dev/null || true
+    docker compose -f docker-compose.dev.yml down -v --remove-orphans 2>/dev/null || true
+    docker compose -f docker-compose.prod.yml down -v --remove-orphans 2>/dev/null || true
     docker system prune -f
     print_success "Cleanup completed!"
 }
@@ -115,10 +115,10 @@ clean_up() {
 show_status() {
     print_status "Container status:"
     echo "Development containers:"
-    docker-compose -f docker-compose.dev.yml ps 2>/dev/null || echo "No dev containers running"
+    docker compose -f docker-compose.dev.yml ps 2>/dev/null || echo "No dev containers running"
     echo ""
     echo "Production containers:"
-    docker-compose -f docker-compose.prod.yml ps 2>/dev/null || echo "No prod containers running"
+    docker compose -f docker-compose.prod.yml ps 2>/dev/null || echo "No prod containers running"
     
     print_status "\nHealth check:"
     if curl -f http://localhost:3000/api/health > /dev/null 2>&1; then
