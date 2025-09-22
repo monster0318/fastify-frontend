@@ -10,8 +10,13 @@ services:
     environment:
       - NODE_ENV=development
       - NEXT_TELEMETRY_DISABLED=1
+      - JWT_SECRET=${JWT_SECRET:-your-dev-secret}
     env_file:
       - .env.local
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/.next
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]

@@ -57,6 +57,13 @@ deploy_dev() {
     check_docker
     check_env
     
+    # Inside the deploy_dev() function
+    if [ -z "$JWT_SECRET" ]; then
+        print_warning "JWT_SECRET not set. Using a fallback for development."
+        export JWT_SECRET="your-dev-secret"
+    fi
+
+
     print_status "Building and starting containers..."
     docker compose -f docker-compose.dev.yml up --build -d
     
@@ -67,18 +74,24 @@ deploy_dev() {
 }
 
 # Function for production deployment
+# ... (inside deploy_prod function) ...
+
 deploy_prod() {
     print_status "Starting production deployment with nginx..."
     check_docker
     check_env
     
+    # Check if the secret is set before deploying
+    if [ -z "$JWT_SECRET" ]; then
+        print_error "JWT_SECRET environment variable is not set. Aborting."
+        exit 1
+    fi
+    
     print_status "Building and starting production containers..."
     docker compose -f docker-compose.prod.yml up --build -d
     
     print_success "Production deployment completed!"
-    print_status "Application is running at: http://localhost (port 80)"
-    print_status "Health check: http://localhost/api/health"
-    print_status "To view logs: ./deploy.sh logs"
+    # ...
 }
 
 # Function to stop containers
